@@ -45,11 +45,15 @@ function checkCollision(){
     const ballRect = ball.getBoundingClientRect();
     const obsRect = obstacle.getBoundingClientRect();
 
-    if( ballRect.right > obsRect.left && ballRect.left < obsRect.right && ballRect.bottom > obsRect.top){
-        alert("GAME OVER");
-        location.reload();
-    }
-    requestAnimationFrame(checkCollision);
+if (
+    ballRect.right > obsRect.left &&
+    ballRect.left < obsRect.right &&
+    ballRect.bottom > obsRect.top
+  ) {
+    gameOver = true;
+    obstacle.style.animation = "none";
+    alert("Game Over");
+  }
 }
 checkCollision();
 //score system
@@ -60,3 +64,27 @@ setInterval(() =>{
     score++;
     scoreEl.textContent = "Score:" + score;
 },100);
+
+const resetBtn = document.getElementById("resetBtn");
+
+resetBtn.addEventListener("click", () => {
+  // Reset state
+  gameOver = false;
+  score = 0;
+
+  // Reset obstacle
+  obstacle.style.animation = "obstacleMove 2s linear infinite";
+  obstacle.style.left = "100%";
+
+  // Reset ball
+  ball.style.bottom = "0px";
+
+  // Restart loop
+  requestAnimationFrame(gameLoop);
+});
+function gameLoop() {
+  if (gameOver) return;
+
+  detectCollision();
+  requestAnimationFrame(gameLoop);
+}
